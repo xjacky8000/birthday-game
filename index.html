@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎂 壽星專屬！生日驚喜九宮格 🎁</title>
+    <title>🎂 壽星專屬！命運霓虹九宮格 🎁</title>
     <style>
+        /* ==========================================================================
+           1. 全局樣式與浪漫粉嫩風格配色
+           ========================================================================== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -31,112 +34,102 @@
         h1 {
             color: #FF69B4;
             font-size: 24px;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
         .subtitle {
             color: #777;
-            font-size: 14px;
-            margin-bottom: 25px;
+            font-size: 13px;
+            margin-bottom: 20px;
         }
 
-        /* 3x3 九宮格容器 */
+        /* ==========================================================================
+           2. 3x3 九宮格與跑馬燈亮圈樣式
+           ========================================================================== */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 100px);
             grid-template-rows: repeat(3, 100px);
             gap: 15px;
             justify-content: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
-        /* 卡片基礎 3D 設定 */
-        .card {
-            perspective: 1000px;
-            cursor: pointer;
-            height: 100px;
-            width: 100px;
-        }
-
-        .card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-style: preserve-3d;
-            box-shadow: 0 4px 8px rgba(255, 105, 180, 0.15);
+        /* 固定顯示內容的精緻獎項格子 */
+        .prize-box {
+            background: #FFFFFF;
+            border: 3px solid #FFE4B5;
             border-radius: 15px;
-        }
-
-        /* 未翻牌時的呼吸律動 */
-        .card:not(.flipped) .card-inner {
-            animation: breathe 3s infinite ease-in-out;
-        }
-
-        @keyframes breathe {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-        }
-
-        /* 翻牌動作 */
-        .card.flipped .card-inner {
-            transform: rotateY(180deg);
-        }
-
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-radius: 15px;
             padding: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            position: relative;
+            transition: all 0.2s ease;
         }
 
-        /* 正面：奶油金黃禮物盒 */
-        .card-front {
-            background: linear-gradient(135deg, #FFE4B5 0%, #FFD700 100%);
-            border: 3px solid #FFF;
+        .prize-icon {
+            font-size: 30px;
+            margin-bottom: 3px;
         }
 
-        .card-front .gift-icon {
-            font-size: 36px;
-        }
-
-        .card-front .click-me {
-            font-size: 11px;
-            color: #D2691E;
-            font-weight: bold;
-            background: rgba(255,255,255,0.7);
-            padding: 2px 6px;
-            border-radius: 10px;
-        }
-
-        /* 背面：中獎結果 */
-        .card-back {
-            background-color: #FFFFFF;
-            border: 3px solid #FF69B4;
-            transform: rotateY(180deg);
-            color: #333;
-        }
-
-        .card-back .prize-icon {
-            font-size: 32px;
-            margin-bottom: 5px;
-        }
-
-        .card-back .prize-name {
+        .prize-name {
             font-size: 11px;
             font-weight: bold;
+            color: #555;
+            line-height: 1.2;
+        }
+
+        /* 【核心亮點：燈號效果】
+           當格子被加上 .active 類別時，會激發高亮粉金邊框與強烈外發光陰影 */
+        .prize-box.active {
+            border-color: #FF1493;
+            background: #FFF0F5;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #FF69B4, inset 0 0 10px #FFB6C1;
+            z-index: 10;
+        }
+
+        /* 特別標註必中項目的顏色，讓畫面看起來多彩真實 */
+        .prize-box.active .prize-name {
             color: #FF1493;
         }
 
-        /* 可愛彈窗樣式 */
+        /* ==========================================================================
+           3. 控制按鈕樣式 (PUNCH 命運煞車鍵)
+           ========================================================================== */
+        .action-btn {
+            background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(255, 20, 147, 0.4);
+            transition: all 0.1s ease;
+            width: 80%;
+            max-width: 280px;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 5px rgba(255, 20, 147, 0.4);
+        }
+
+        .action-btn:disabled {
+            background: #CCC;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* ==========================================================================
+           4. 可愛彈窗樣式
+           ========================================================================== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -217,105 +210,129 @@
 
     <div class="container">
         <h1>🎂 Happy Birthday! 🎁</h1>
-        <p class="subtitle">親愛的壽星，快來翻開你的專屬生日好禮吧！</p>
+        <p class="subtitle">夢幻好禮全公開！按下按鈕考驗你的命運指尖吧！</p>
         
-        <!-- 修正點：直接將 9 個格子固定寫死在 HTML，防堵任何因為 JS 加載失敗導致的空白 -->
-        <div class="grid-container">
-            <div class="card" onclick="openCard(this)">
-                <div class="card-inner">
-                    <div class="card-front"><div class="gift-icon">🎁</div><div class="click-me">點我抽</div></div>
-                    <div class="card-back"><div class="prize-icon">🔄</div><div class="prize-name">再來一次</div></div>
-                </div>
-            </div>
-            <div class="card" onclick="openCard(this)">
-                <div class="card-inner">
-                    <div class="card-front"><div class="gift-icon">🎁</div><div class="click-me">點我抽</div></div>
-                    <div class="card-back"><div class="prize-icon">🔄</div><div class="prize-name">再來一次</div></div>
-                </div>
-            </div>
-            <div class="card" onclick="openCard(this)">
-                <div class="card-inner">
-                    <div class="card-front"><div class="gift-icon">🎁</div><div class="click-me">點我抽</div></div>
-                    <div class="card-back"><div class="prize-icon">🔄</div><div class="prize-name">再來一次</div></div>
-                </div>
-            </div>
-            <div class="card" onclick="openCard(this)">
-                <div class="card-inner">
-                    <div class="card-front"><div class="gift-icon">🎁</div><div class="click-me">點我抽</div></div>
-                    <div class="card-back"><div class="prize-icon">🔄</div><div class="prize-name">再來一次</div></div>
-                </div>
-            </div>
-            <div class="card" onclick="openCard(this)">
-                <div class="card-inner">
-                    <div class="card-front"><div class="gift-icon">🎁</div><div class="click-me">點我抽</div></div>
-                    <div class="card-back"><div class="prize-icon">🔄</div><div class="prize-name">再來一次</div></div>
-                </div>
-            </div>
-            <div class="card" onclick="openCard(this)">
-                <div class="card-inner">
-                    <div class="card-front"><div class="gift-icon">🎁</div><div class="click-me">點我抽</div></div>
-                    <div class="card-back"><div class="prize-icon">🔄</div><div class="prize-name">再來一次</div></div>
-                </div>
-            </div>
-            <div class="card" onclick="openCard(this)">
-                <div class="card-inner">
-                    <div class="card-front"><div class="gift-icon">🎁</div><div class="click-me">點我抽</div></div>
-                    <div class="card-back"><div class="prize-icon">🔄</div><div class="prize-name">再來一次</div></div>
-                </div>
-            </div>
-            <div class="card" onclick="openCard(this)">
-                <div class="card-inner">
-                    <div class="card-front"><div class="gift-icon">🎁</div><div class="click-me">點我抽</div></div>
-                    <div class="card-back"><div class="prize-icon">🔄</div><div class="prize-name">再來一次</div></div>
-                </div>
-            </div>
-            <div class="card" onclick="openCard(this)">
-                <div class="card-inner">
-                    <div class="card-front"><div class="gift-icon">🎁</div><div class="click-me">點我抽</div></div>
-                    <div class="card-back"><div class="prize-icon">🔄</div><div class="prize-name">再來一次</div></div>
-                </div>
-            </div>
+        <!-- 九宮格主體：直接將 9 個禮物項目公開顯示在對應格子 -->
+        <div class="grid-container" id="grid">
+            <div class="prize-box" id="cell-0"><div class="prize-icon">☕</div><div class="prize-name">星巴克飲料券</div></div>
+            <div class="prize-box" id="cell-1"><div class="prize-icon">🎂</div><div class="prize-name">生日蛋糕</div></div>
+            <div class="prize-box" id="cell-2"><div class="prize-icon">🍣</div><div class="prize-name">南港LaLaport</div></div>
+            <div class="prize-box" id="cell-3"><div class="prize-icon">💵</div><div class="prize-name">現金5000</div></div>
+            <div class="prize-box" id="cell-4"><div class="prize-icon">🎟️</div><div class="prize-name">統一1000禮卷</div></div>
+            <div class="prize-box" id="cell-5"><div class="prize-icon">🎁</div><div class="prize-name">神秘禮物</div></div>
+            <!-- 注意：此格為我們指定的目標「再來一次」 -->
+            <div class="prize-box" id="cell-6"><div class="prize-icon">🔄</div><div class="prize-name">再來一次</div></div>
+            <div class="prize-box" id="cell-7"><div class="prize-icon">🍢</div><div class="prize-name">終身豬血糕</div></div>
+            <div class="prize-box" id="cell-8"><div class="prize-icon">🏖️</div><div class="prize-name">放假一天</div></div>
         </div>
+
+        <!-- 命運控制大按鈕 -->
+        <button class="action-btn" id="ctrlBtn" onclick="stopMarquee()">PUNCH！按下停止 🎯</button>
     </div>
 
-    <!-- 彈窗 -->
+    <!-- 可愛中獎彈窗 -->
     <div class="modal-overlay" id="resultModal">
         <div class="modal-box">
             <div class="modal-icon">🔄</div>
             <div class="modal-title">哎呀！差一點點！</div>
-            <div class="modal-text">獲得【再來一次】的機會！<br>不氣餒，好運就在下一格，請再洗牌抽一次吧！❤️</div>
-            <button class="modal-btn" onclick="closeModal()">重新洗牌再抽！</button>
+            <div class="modal-text">滑鼠稍微滑了一下！抽到【再來一次】！<br>大獎還在上面，調整好呼吸，再試一次！❤️</div>
+            <button class="modal-btn" onclick="closeModal()">重洗好運再抽！</button>
         </div>
     </div>
 
+    <!-- ==========================================================================
+       5. 核心控燈與減速演算法控制邏輯
+       ========================================================================== -->
     <script>
-        let isLocked = false;
+        // 【控制參數定義】
+        let currentIndex = 0;      // 當前亮燈的格子索引 (0 ~ 8)
+        let speed = 70;            // 霓虹燈初始亂跑的速度 (毫秒，越低越快)
+        let timer = null;          // 計時器指針
+        let isStopping = false;    // 狀態鎖定：紀錄 User 是否已經按下停止鍵
 
-        function openCard(element) {
-            if (isLocked || element.classList.contains('flipped')) return;
-            isLocked = true;
+        // 定義九宮格九個格子視覺上隨機跳轉的跳轉數組，讓光圈看起來不是死板的轉圈，而是「真的在亂跳」
+        const jumpSequence = [0, 4, 2, 6, 1, 7, 5, 3, 8];
+        let seqPointer = 0;
 
-            // 執行翻牌
-            element.classList.add('flipped');
+        /**
+         * 功能：啟動霓虹跑馬燈亂跳效果
+         */
+        function startMarquee() {
+            if (timer) clearInterval(timer);
+            isStopping = false;
+            speed = 70; // 恢復快速亂跑狀態
+            document.getElementById('ctrlBtn').disabled = false;
+            document.getElementById('ctrlBtn').textContent = "PUNCH！按下停止 🎯";
 
-            // 彈窗顯示
-            setTimeout(() => {
-                document.getElementById('resultModal').classList.add('active');
-            }, 800);
+            // 啟動定時監聽，每隔固定毫秒更換亮燈格子
+            timer = setInterval(runLights, speed);
         }
 
+        /**
+         * 功能：燈號變更核心驅動
+         */
+        function runLights() {
+            // 移除上一個格子的精美亮邊特效
+            document.getElementById(`cell-${currentIndex}`).classList.remove('active');
+
+            if (!isStopping) {
+                // 【正常隨機亂跑期】：依照設定好的亂跳數組變更燈號
+                seqPointer = (seqPointer + 1) % jumpSequence.length;
+                currentIndex = jumpSequence[seqPointer];
+            } else {
+                // 【逐漸減速逼近必中目標期】：當按下停止後，強制燈號進入順序步進，並讓 speed 越來越慢
+                currentIndex = (currentIndex + 1) % 9;
+                
+                clearInterval(timer);
+                speed += 60; // 每次跑動增加延遲時間，做出「齒輪漸漸卡死、越來越慢」的逼真物理減速感
+
+                // 核心外掛卡死條件：當減速到速度大於 350 毫秒，且剛好走到第 6 格（再來一次）時，完美定格煞車！
+                if (speed > 350 && currentIndex === 6) {
+                    document.getElementById(`cell-${currentIndex}`).classList.add('active');
+                    setTimeout(() => {
+                        showModal();
+                    }, 600);
+                    return; // 結束整個計時器迴圈
+                }
+                
+                // 如果還沒降到足夠速度或還沒走到第 6 格，繼續遞迴呼叫直到煞車鎖死
+                timer = setInterval(runLights, speed);
+            }
+
+            // 為當前被選中的格子套上高亮發光 CSS 樣式
+            document.getElementById(`cell-${currentIndex}`).classList.add('active');
+        }
+
+        /**
+         * 功能：觸發命運煞車按鈕
+         */
+        function stopMarquee() {
+            if (isStopping) return; // 防止 User 連續瘋狂點擊按鈕
+            isStopping = true;
+            document.getElementById('ctrlBtn').disabled = true;
+            document.getElementById('ctrlBtn').textContent = "正在計算結果...";
+        }
+
+        /**
+         * 功能：顯示中獎惡搞彈窗
+         */
+        function showModal() {
+            document.getElementById('resultModal').classList.add('active');
+        }
+
+        /**
+         * 功能：關閉彈窗並重新啟動遊戲
+         */
         function closeModal() {
             document.getElementById('resultModal').classList.remove('active');
-            
-            // 將所有卡片翻轉回來
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => card.classList.remove('flipped'));
-            
-            // 解鎖讓壽星可以重新點擊
-            setTimeout(() => {
-                isLocked = false;
-            }, 600);
+            // 移除目前的 active 亮燈，準備重開
+            document.getElementById(`cell-${currentIndex}`).classList.remove('active');
+            // 重新開局亂跑
+            startMarquee();
         }
+
+        // 網頁完全載入後立即點亮霓虹燈
+        window.onload = startMarquee;
     </script>
 </body>
 </html>
