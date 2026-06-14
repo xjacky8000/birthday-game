@@ -68,8 +68,8 @@
             justify-content: center;
             padding: 5px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            /* 增加 transition 讓格子隨機換位置時，帶有流暢的平移滑動感，視覺效果更高級 */
-            transition: border-color 0.15s, background 0.15s, transform 0.15s, box-shadow 0.15s, order 0.1s ease-in-out;
+            /* 【優化參數】調整 order 的 transition 時間為 0.15s，配合減速 30% 後的節奏，滑動更絲滑 */
+            transition: border-color 0.15s, background 0.15s, transform 0.15s, box-shadow 0.15s, order 0.15s ease-in-out;
         }
 
         .prize-icon {
@@ -116,10 +116,6 @@
             width: 85%;
             max-width: 280px;
             letter-spacing: 1px;
-        }
-
-        .action-btn:active {
-            transform: scale(0.95);
         }
 
         .action-btn:disabled {
@@ -242,6 +238,7 @@
         let currentIndex = 0;
         let speed = 70;
         let timer = null;
+        let gridTimer = null;      // 【新增參數】獨立控制九宮格格子移動的計時器
         let isStopping = false;
         const jumpSequence = [0, 4, 2, 6, 1, 7, 5, 3, 8];
         let seqPointer = 0;
@@ -283,10 +280,9 @@
 
         /**
          * 參數說明：動態混淆九宮格位置（大風吹效果）
-         * 運作原理：透過隨機打亂 1~9 的數值，指派給 9 個 HTML 格子的 CSS `order` 屬性。
-         * 這樣格子不需要重新渲染，就能在畫面上產生高速隨機換位的視覺震撼效果！
          */
         function shuffleGridPositions() {
+            if (isStopping) return; // 如果按下停止，立刻凍結格子位置
             const orders = [1, 2, 3, 4, 5, 6, 7, 8, 9].sort(() => Math.random() - 0.5);
             for (let i = 0; i < 9; i++) {
                 document.getElementById(`cell-${i}`).style.order = orders[i];
@@ -298,16 +294,22 @@
          */
         function startMarquee() {
             if (timer) clearInterval(timer);
+            if (gridTimer) clearInterval(gridTimer);
+            
             isStopping = false;
             speed = 70;
             document.getElementById('ctrlBtn').disabled = false;
             document.getElementById('ctrlBtn').textContent = "PUNCH！按下停止 🎯";
 
+            // 1. 光圈跑馬燈維持原速（70毫秒跳一格），保持快節奏的電子樂趣
             timer = setInterval(runLights, speed);
+            
+            // 2. 【核心修改參數】格子移動速度減少 30%：從 70ms 慢到 100ms
+            gridTimer = setInterval(shuffleGridPositions, 100);
         }
 
         /**
-         * 功能：驅動跑馬燈、音效與格子隨機移動
+         * 功能：驅動跑馬燈與音效
          */
         function runLights() {
             document.getElementById(`cell-${currentIndex}`).classList.remove('active');
@@ -317,12 +319,9 @@
                 seqPointer = (seqPointer + 1) % jumpSequence.length;
                 currentIndex = jumpSequence[seqPointer];
                 
-                // 【核心新點子】：光圈跳一步，格子就集體大風吹隨機換位置一次！
-                shuffleGridPositions();
-                
                 playSound(659.25, 'sine', 0.04); // E5 輕快嗶嗶音
             } else {
-                // 【按下停止後的減速期】：格子順序立刻凍結煞車不再移動！只有光圈繼續往前走並做物理減速
+                // 【按下停止後的減速期】：格子已在 stopMarquee() 內 clearInterval 凍結
                 currentIndex = (currentIndex + 1) % 9;
                 clearInterval(timer);
                 speed += 60; 
@@ -359,6 +358,10 @@
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
             isStopping = true;
+            
+            // 按下停止時，立刻清除格子移動計時器，強制格子定格
+            clearInterval(gridTimer); 
+            
             document.getElementById('ctrlBtn').disabled = true;
             document.getElementById('ctrlBtn').textContent = "正在計算結果...";
         }
@@ -371,7 +374,7 @@
             document.getElementById('resultModal').classList.remove('active');
             document.getElementById(`cell-${currentIndex}`).classList.remove('active');
             
-            // 重置時，把九宮格順序回歸正常 (1~9 排好)，讓重新開始時的視覺更乾淨
+            // 重置時，把九宮格順序回歸正常 (1~9 排好)
             for (let i = 0; i < 9; i++) {
                 document.getElementById(`cell-${i}`).style.order = i + 1;
             }
