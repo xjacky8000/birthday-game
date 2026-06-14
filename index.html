@@ -68,8 +68,8 @@
             justify-content: center;
             padding: 5px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            /* 【優化參數】調整 order 的 transition 時間為 0.15s，配合減速 30% 後的節奏，滑動更絲滑 */
-            transition: border-color 0.15s, background 0.15s, transform 0.15s, box-shadow 0.15s, order 0.15s ease-in-out;
+            /* 【優化參數】將 order 的 transition 平滑時間微調為 0.18s，完美匹配 130ms 的移動速度 */
+            transition: border-color 0.15s, background 0.15s, transform 0.15s, box-shadow 0.15s, order 0.18s ease-in-out;
         }
 
         .prize-icon {
@@ -238,7 +238,7 @@
         let currentIndex = 0;
         let speed = 70;
         let timer = null;
-        let gridTimer = null;      // 【新增參數】獨立控制九宮格格子移動的計時器
+        let gridTimer = null;      
         let isStopping = false;
         const jumpSequence = [0, 4, 2, 6, 1, 7, 5, 3, 8];
         let seqPointer = 0;
@@ -246,9 +246,6 @@
 
         /**
          * 參數說明：音效合成器函數
-         * @param {number} frequency - 聲音頻率 (Hz)
-         * @param {string} type - 波形種類 ('sine', 'square', 'triangle', 'sawtooth')
-         * @param {number} duration - 聲音持續時間 (秒)
          */
         function playSound(frequency, type, duration) {
             try {
@@ -282,7 +279,7 @@
          * 參數說明：動態混淆九宮格位置（大風吹效果）
          */
         function shuffleGridPositions() {
-            if (isStopping) return; // 如果按下停止，立刻凍結格子位置
+            if (isStopping) return; 
             const orders = [1, 2, 3, 4, 5, 6, 7, 8, 9].sort(() => Math.random() - 0.5);
             for (let i = 0; i < 9; i++) {
                 document.getElementById(`cell-${i}`).style.order = orders[i];
@@ -301,11 +298,11 @@
             document.getElementById('ctrlBtn').disabled = false;
             document.getElementById('ctrlBtn').textContent = "PUNCH！按下停止 🎯";
 
-            // 1. 光圈跑馬燈維持原速（70毫秒跳一格），保持快節奏的電子樂趣
+            // 1. 光圈快轉跑馬燈（70毫秒跳一格）
             timer = setInterval(runLights, speed);
             
-            // 2. 【核心修改參數】格子移動速度減少 30%：從 70ms 慢到 100ms
-            gridTimer = setInterval(shuffleGridPositions, 100);
+            // 2. 【核心修改參數】格子移動速度再減少 30%：從 100ms 慢到 130ms，換位更有律動感
+            gridTimer = setInterval(shuffleGridPositions, 130);
         }
 
         /**
@@ -315,13 +312,11 @@
             document.getElementById(`cell-${currentIndex}`).classList.remove('active');
 
             if (!isStopping) {
-                // 【正常衝刺期】：光圈亂跳
                 seqPointer = (seqPointer + 1) % jumpSequence.length;
                 currentIndex = jumpSequence[seqPointer];
                 
-                playSound(659.25, 'sine', 0.04); // E5 輕快嗶嗶音
+                playSound(659.25, 'sine', 0.04); 
             } else {
-                // 【按下停止後的減速期】：格子已在 stopMarquee() 內 clearInterval 凍結
                 currentIndex = (currentIndex + 1) % 9;
                 clearInterval(timer);
                 speed += 60; 
@@ -330,7 +325,6 @@
                 if (currentPitch < 150) currentPitch = 150;
                 playSound(currentPitch, 'triangle', 0.08); 
 
-                // 煞車鎖死條件：速度夠慢且光圈剛好壓在第 6 格（再來一次）上
                 if (speed > 350 && currentIndex === 6) {
                     document.getElementById(`cell-${currentIndex}`).classList.add('active');
                     
@@ -359,7 +353,7 @@
             }
             isStopping = true;
             
-            // 按下停止時，立刻清除格子移動計時器，強制格子定格
+            // 凍結格子大風吹
             clearInterval(gridTimer); 
             
             document.getElementById('ctrlBtn').disabled = true;
@@ -374,7 +368,6 @@
             document.getElementById('resultModal').classList.remove('active');
             document.getElementById(`cell-${currentIndex}`).classList.remove('active');
             
-            // 重置時，把九宮格順序回歸正常 (1~9 排好)
             for (let i = 0; i < 9; i++) {
                 document.getElementById(`cell-${i}`).style.order = i + 1;
             }
