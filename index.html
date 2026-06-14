@@ -6,7 +6,7 @@
     <title>🎂 壽星專屬！命運霓虹九宮格 🎁</title>
     <style>
         /* ==========================================================================
-           1. 全局樣式與浪漫粉嫩風格配色
+           1. 全局樣式與酷炫暗色霓虹風格（依據 Jacky 哥最新畫面優化）
            ========================================================================== */
         * {
             box-sizing: border-box;
@@ -16,7 +16,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #FFF0F5 0%, #FFE4E1 100%);
+            background: linear-gradient(135deg, #2c1f2d 0%, #1a151b 100%); /* 深邃迷幻紫黑底色 */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -33,15 +33,15 @@
 
         h1 {
             color: #FF69B4;
-            font-size: 24px;
+            font-size: 26px;
             margin-bottom: 5px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
         }
 
         .subtitle {
-            color: #777;
+            color: #bfaabf;
             font-size: 13px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         /* ==========================================================================
@@ -53,67 +53,66 @@
             grid-template-rows: repeat(3, 100px);
             gap: 15px;
             justify-content: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
-        /* 固定顯示內容的精緻獎項格子 */
         .prize-box {
-            background: #FFFFFF;
-            border: 3px solid #FFE4B5;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 228, 181, 0.2);
             border-radius: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 5px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            position: relative;
-            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: all 0.15s ease;
         }
 
         .prize-icon {
-            font-size: 30px;
-            margin-bottom: 3px;
+            font-size: 32px;
+            margin-bottom: 4px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
 
         .prize-name {
             font-size: 11px;
             font-weight: bold;
-            color: #555;
+            color: #e0cfe0;
             line-height: 1.2;
         }
 
-        /* 【核心亮點：燈號效果】
-           當格子被加上 .active 類別時，會激發高亮粉金邊框與強烈外發光陰影 */
+        /* 跑馬燈發光高亮特效 */
         .prize-box.active {
             border-color: #FF1493;
-            background: #FFF0F5;
-            transform: scale(1.05);
-            box-shadow: 0 0 20px #FF69B4, inset 0 0 10px #FFB6C1;
+            background: rgba(255, 105, 180, 0.2);
+            transform: scale(1.08);
+            box-shadow: 0 0 25px #FF69B4, inset 0 0 10px #FFB6C1;
             z-index: 10;
         }
 
-        /* 特別標註必中項目的顏色，讓畫面看起來多彩真實 */
         .prize-box.active .prize-name {
-            color: #FF1493;
+            color: #FFF;
+            text-shadow: 0 0 5px #FF1493;
         }
 
         /* ==========================================================================
-           3. 控制按鈕樣式 (PUNCH 命運煞車鍵)
+           3. 控制按鈕樣式
            ========================================================================== */
         .action-btn {
             background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
             color: white;
             border: none;
-            padding: 14px 40px;
+            padding: 15px 40px;
             font-size: 18px;
             font-weight: bold;
             border-radius: 30px;
             cursor: pointer;
-            box-shadow: 0 6px 15px rgba(255, 20, 147, 0.4);
+            box-shadow: 0 6px 20px rgba(255, 20, 147, 0.6);
             transition: all 0.1s ease;
-            width: 80%;
+            width: 85%;
             max-width: 280px;
+            letter-spacing: 1px;
         }
 
         .action-btn:active {
@@ -122,7 +121,8 @@
         }
 
         .action-btn:disabled {
-            background: #CCC;
+            background: #555;
+            color: #aaa;
             box-shadow: none;
             cursor: not-allowed;
         }
@@ -136,7 +136,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -158,7 +158,7 @@
             border-radius: 20px;
             padding: 25px;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             transform: scale(0.8);
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 4px solid #FFB6C1;
@@ -169,7 +169,7 @@
         }
 
         .modal-icon {
-            font-size: 50px;
+            font-size: 55px;
             margin-bottom: 15px;
             animation: bounce 1s infinite;
         }
@@ -180,7 +180,7 @@
         }
 
         .modal-title {
-            font-size: 20px;
+            font-size: 22px;
             color: #FF69B4;
             margin-bottom: 10px;
             font-weight: bold;
@@ -188,16 +188,16 @@
 
         .modal-text {
             font-size: 15px;
-            color: #555;
+            color: #444;
             line-height: 1.6;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .modal-btn {
             background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
             color: white;
             border: none;
-            padding: 10px 24px;
+            padding: 12px 28px;
             font-size: 16px;
             font-weight: bold;
             border-radius: 25px;
@@ -212,7 +212,6 @@
         <h1>🎂 Happy Birthday! 🎁</h1>
         <p class="subtitle">夢幻好禮全公開！按下按鈕考驗你的命運指尖吧！</p>
         
-        <!-- 九宮格主體：直接將 9 個禮物項目公開顯示在對應格子 -->
         <div class="grid-container" id="grid">
             <div class="prize-box" id="cell-0"><div class="prize-icon">☕</div><div class="prize-name">星巴克飲料券</div></div>
             <div class="prize-box" id="cell-1"><div class="prize-icon">🎂</div><div class="prize-name">生日蛋糕</div></div>
@@ -220,17 +219,15 @@
             <div class="prize-box" id="cell-3"><div class="prize-icon">💵</div><div class="prize-name">現金5000</div></div>
             <div class="prize-box" id="cell-4"><div class="prize-icon">🎟️</div><div class="prize-name">統一1000禮卷</div></div>
             <div class="prize-box" id="cell-5"><div class="prize-icon">🎁</div><div class="prize-name">神秘禮物</div></div>
-            <!-- 注意：此格為我們指定的目標「再來一次」 -->
             <div class="prize-box" id="cell-6"><div class="prize-icon">🔄</div><div class="prize-name">再來一次</div></div>
             <div class="prize-box" id="cell-7"><div class="prize-icon">🍢</div><div class="prize-name">終身豬血糕</div></div>
             <div class="prize-box" id="cell-8"><div class="prize-icon">🏖️</div><div class="prize-name">放假一天</div></div>
         </div>
 
-        <!-- 命運控制大按鈕 -->
         <button class="action-btn" id="ctrlBtn" onclick="stopMarquee()">PUNCH！按下停止 🎯</button>
     </div>
 
-    <!-- 可愛中獎彈窗 -->
+    <!-- 彈窗 -->
     <div class="modal-overlay" id="resultModal">
         <div class="modal-box">
             <div class="modal-icon">🔄</div>
@@ -241,97 +238,132 @@
     </div>
 
     <!-- ==========================================================================
-       5. 核心控燈與減速演算法控制邏輯
+       5. 核心音效合成與跑馬燈減速邏輯
        ========================================================================== -->
     <script>
-        // 【控制參數定義】
-        let currentIndex = 0;      // 當前亮燈的格子索引 (0 ~ 8)
-        let speed = 70;            // 霓虹燈初始亂跑的速度 (毫秒，越低越快)
-        let timer = null;          // 計時器指針
-        let isStopping = false;    // 狀態鎖定：紀錄 User 是否已經按下停止鍵
-
-        // 定義九宮格九個格子視覺上隨機跳轉的跳轉數組，讓光圈看起來不是死板的轉圈，而是「真的在亂跳」
+        let currentIndex = 0;
+        let speed = 70;
+        let timer = null;
+        let isStopping = false;
         const jumpSequence = [0, 4, 2, 6, 1, 7, 5, 3, 8];
         let seqPointer = 0;
 
+        // 初始化 Web Audio 內容（解決現代瀏覽器安全限制，需由使用者點擊或觸發後建立）
+        let audioCtx = null;
+
         /**
-         * 功能：啟動霓虹跑馬燈亂跳效果
+         * 參數說明：音效合成器函數
+         * @param {number} frequency - 聲音頻率 (Hz)
+         * @param {string} type - 波形種類 ('sine', 'square', 'triangle', 'sawtooth')
+         * @param {number} duration - 聲音持續時間 (秒)
+         */
+        function playSound(frequency, type, duration) {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                // 如果音訊環境被暫停（瀏覽器預設），將其喚醒
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = type;
+                oscillator.frequency.value = frequency;
+
+                // 讓聲音尾音有滑順的淡出感，聽起來比較悅耳不刺耳
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log("Audio Error:", e);
+            }
+        }
+
+        /**
+         * 功能：啟動霓虹跑馬燈
          */
         function startMarquee() {
             if (timer) clearInterval(timer);
             isStopping = false;
-            speed = 70; // 恢復快速亂跑狀態
+            speed = 70;
             document.getElementById('ctrlBtn').disabled = false;
             document.getElementById('ctrlBtn').textContent = "PUNCH！按下停止 🎯";
 
-            // 啟動定時監聽，每隔固定毫秒更換亮燈格子
             timer = setInterval(runLights, speed);
         }
 
         /**
-         * 功能：燈號變更核心驅動
+         * 功能：驅動跑馬燈與即時音效搭配
          */
         function runLights() {
-            // 移除上一個格子的精美亮邊特效
             document.getElementById(`cell-${currentIndex}`).classList.remove('active');
 
             if (!isStopping) {
-                // 【正常隨機亂跑期】：依照設定好的亂跳數組變更燈號
                 seqPointer = (seqPointer + 1) % jumpSequence.length;
                 currentIndex = jumpSequence[seqPointer];
-            } else {
-                // 【逐漸減速逼近必中目標期】：當按下停止後，強制燈號進入順序步進，並讓 speed 越來越慢
-                currentIndex = (currentIndex + 1) % 9;
                 
+                // 【快轉期音效】：發出高頻、清脆快速的復古嗶嗶聲 ('sine' 正弦波)
+                playSound(587.33, 'sine', 0.05); // D5 鋼琴音高
+            } else {
+                currentIndex = (currentIndex + 1) % 9;
                 clearInterval(timer);
-                speed += 60; // 每次跑動增加延遲時間，做出「齒輪漸漸卡死、越來越慢」的逼真物理減速感
+                speed += 60; 
 
-                // 核心外掛卡死條件：當減速到速度大於 350 毫秒，且剛好走到第 6 格（再來一次）時，完美定格煞車！
+                // 【減速期音效】：隨速度變慢，音調跟著往下降，做出沉重的機械齒輪感
+                let currentPitch = 440 - (speed * 0.5); 
+                if (currentPitch < 150) currentPitch = 150;
+                playSound(currentPitch, 'triangle', 0.08); // 'triangle' 三角波聽起來較溫和沉穩
+
                 if (speed > 350 && currentIndex === 6) {
                     document.getElementById(`cell-${currentIndex}`).classList.add('active');
+                    
+                    // 【中獎終極音效】：精準停在「再來一次」時，炸出一個向上的彈跳歡樂和弦！
+                    setTimeout(() => { playSound(392.00, 'square', 0.1); }, 0);   // G4
+                    setTimeout(() => { playSound(523.25, 'square', 0.1); }, 80);  // C5
+                    setTimeout(() => { playSound(659.25, 'square', 0.12); }, 160); // E5
+                    setTimeout(() => { playSound(783.99, 'square', 0.3); }, 240);  // G5
+
                     setTimeout(() => {
                         showModal();
-                    }, 600);
-                    return; // 結束整個計時器迴圈
+                    }, 700);
+                    return;
                 }
                 
-                // 如果還沒降到足夠速度或還沒走到第 6 格，繼續遞迴呼叫直到煞車鎖死
                 timer = setInterval(runLights, speed);
             }
 
-            // 為當前被選中的格子套上高亮發光 CSS 樣式
             document.getElementById(`cell-${currentIndex}`).classList.add('active');
         }
 
-        /**
-         * 功能：觸發命運煞車按鈕
-         */
         function stopMarquee() {
-            if (isStopping) return; // 防止 User 連續瘋狂點擊按鈕
+            if (isStopping) return;
+            // 第一次點擊時，順便在背景觸發喚醒音訊環境
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
             isStopping = true;
             document.getElementById('ctrlBtn').disabled = true;
             document.getElementById('ctrlBtn').textContent = "正在計算結果...";
         }
 
-        /**
-         * 功能：顯示中獎惡搞彈窗
-         */
         function showModal() {
             document.getElementById('resultModal').classList.add('active');
         }
 
-        /**
-         * 功能：關閉彈窗並重新啟動遊戲
-         */
         function closeModal() {
             document.getElementById('resultModal').classList.remove('active');
-            // 移除目前的 active 亮燈，準備重開
             document.getElementById(`cell-${currentIndex}`).classList.remove('active');
-            // 重新開局亂跑
             startMarquee();
         }
 
-        // 網頁完全載入後立即點亮霓虹燈
         window.onload = startMarquee;
     </script>
 </body>
