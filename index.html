@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎂 壽星專屬！生日驚喜九宮格 🎁</title>
+    <style>
+        /* ==========================================================================
+           1. 全局樣式與粉嫩少女風配色
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, 'Microsoft JhengHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #FFF0F5 0%, #FFE4E1 100%); /* 櫻花粉至溫柔白雙色漸層 */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px; /* 完美適應 LINE 內建瀏覽器寬度 */
+            text-align: center;
+        }
+
+        h1 {
+            color: #FF69B4; /* 浪漫深粉紅 */
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        /* ==========================================================================
+           2. 3x3 九宮格容器與翻牌卡片動畫
+           ========================================================================== */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 100px); /* 固定 3x3 寬度 */
+            grid-template-rows: repeat(3, 100px);    /* 固定 3x3 高度 */
+            gap: 15px; /* 格子間距 */
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        /* 卡片 3D 翻轉基礎設定 */
+        .card {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px rgba(255, 105, 180, 0.15);
+            border-radius: 15px;
+        }
+
+        /* 呼吸小動畫：讓還沒點擊的格子有微微跳動感 */
+        .card:not(.flipped) .card-inner {
+            animation: breathe 3s infinite ease-in-out;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        /* 當卡片被加上 .flipped 類別時執行 180 度翻轉 */
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        /* 卡片正面與背面共有樣式 */
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* 防止翻轉時背面穿透 */
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            padding: 5px;
+        }
+
+        /* 卡片正面：未點擊前的可愛禮物盒視覺 */
+        .card-front {
+            background: linear-gradient(135deg, #FFE4B5 0%, #FFD700 100%); /* 溫柔奶油黃與金黃漸層 */
+            border: 3px solid #FFF;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .card-front .gift-icon {
+            font-size: 36px;
+            margin-bottom: 2px;
+        }
+
+        .card-front .click-me {
+            font-size: 11px;
+            color: #D2691E;
+            font-weight: bold;
+            background: rgba(255,255,255,0.7);
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        /* 卡片背面：翻開後的獎項呈現 */
+        .card-back {
+            background-color: #FFFFFF;
+            border: 3px solid #FF69B4; /* 浪漫深粉紅邊框 */
+            transform: rotateY(180deg); /* 預先旋轉 180 度隱藏 */
+            color: #333;
+        }
+
+        .card-back .prize-icon {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .card-back .prize-name {
+            font-size: 11px;
+            font-weight: bold;
+            color: #FF1493;
+            word-break: break-all;
+        }
+
+        /* ==========================================================================
+           3. 可愛型彈窗 (Modal) 樣式
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            background: #FFF;
+            width: 100%;
+            max-width: 320px;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 4px solid #FFB6C1;
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .modal-title {
+            font-size: 20px;
+            color: #FF69B4;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .modal-text {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* 彈窗內可愛的重來按鈕 */
+        .modal-btn {
+            background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 20, 147, 0.3);
+            transition: transform 0.1s ease;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎂 Happy Birthday! 🎁</h1>
+        <p class="subtitle">親愛的壽星，快來翻開你的專屬生日好禮吧！</p>
+        
+        <!-- 九宮格主體 -->
+        <div class="grid-container" id="gridContainer">
+            <!-- 這裡的 9 個卡片結構會由下方的 JavaScript 參數自動動態生成 -->
+        </div>
+    </div>
+
+    <!-- 惡搞驚喜彈窗結構 -->
+    <div class="modal-overlay" id="resultModal">
+        <div class="modal-box">
+            <div class="modal-icon" id="modalIcon">🔄</div>
+            <div class="modal-title" id="modalTitle">哎呀！差一點點！</div>
+            <div class="modal-text" id="modalText">獲得【再來一次】的機會！<br>不氣餒，好運就在下一格，請再洗牌抽一次吧！❤️</div>
+            <button class="modal-btn" onclick="resetGame()">重新洗牌再抽！</button>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+       4. 核心遊戲控制邏輯 (核心控制參數說明詳見代碼註解)
+       ========================================================================== -->
+    <script>
+        // 【參數說明：原始獎項陣列】
+        // 包含你指定的九個固定選項，每個選項包含名稱(name)與對應的圖示(icon)
+        const originalPrizes = [
+            { name: "星巴克飲料券", icon: "☕" },
+            { name: "生日蛋糕", icon: "🎂" },
+            { name: "南港 LaLaport 大餐", icon: "🍣" },
+            { name: "現金5000", icon: "💵" },
+            { name: "統一1000元禮卷", icon: "🎟️" },
+            { name: "神秘禮物", icon: "🎁" },
+            { name: "再來一次", icon: "🔄" },
+            { name: "豬血糕終身免費食用", icon: "🍢" },
+            { name: "放假一天", icon: "🏖️" }
+        ];
+
+        // 追蹤整場遊戲是否已經點擊過，防止連續重複點擊
+        let hasClicked = false; 
+
+        /**
+         * 功能：初始化遊戲並動態渲染九宮格
+         * 參數說明：
+         * 1. [...originalPrizes]: 使用展開運算子複製一份新陣列，避免污染原始資料。
+         * 2. Math.random(): 透過隨機排序演算法，讓 9 個獎項每次重新整理或洗牌時，視覺位置完全不同。
+         */
+        function initGame() {
+            hasClicked = false;
+            const gridContainer = document.getElementById('gridContainer');
+            gridContainer.innerHTML = ''; // 清空上一局的九宮格
+
+            // 進行隨機洗牌，製造視覺上的真實隨機感
+            const shuffledPrizes = [...originalPrizes].sort(() => Math.random() - 0.5);
+
+            // 動態產生 9 個格子的 HTML 結構
+            shuffledPrizes.forEach((prize, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                // 將獎項的數據透過 dataset 參數綁定在 HTML 節點上，方便後續邏輯調用
+                card.dataset.name = prize.name;
+                card.dataset.icon = prize.icon;
+                card.dataset.index = index;
+
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="gift-icon">🎁</div>
+                            <div class="click-me">點我抽</div>
+                        </div>
+                        <div class="card-back">
+                            <div class="prize-icon" id="icon-${index}">${prize.icon}</div>
+                            <div class="prize-name" id="name-${index}">${prize.name}</div>
+                        </div>
+                    </div>
+                );
+                
+                // 綁定點擊事件
+                card.addEventListener('click', () => handleCardClick(card));
+                gridContainer.appendChild(card);
+            });
+        }
+
+        /**
+         * 功能：處理壽星點擊格子的核心邏輯
+         * 參數說明：
+         * @param {HTMLElement} cardElement - 被壽星點擊的那一張卡片 DOM 節點
+         * 
+         * 核心外掛邏輯：
+         * 滿足 Jacky 哥「指定無論朋友怎麼點選九宮格都是會點選到第7項(再來一次)」的要求。
+         * 運作原理：當壽星點擊該格時，不管該格原本隨機分配到什麼，程式會在翻牌動畫「秀出來前的一瞬間」，
+         * 把該格子的後台數據與前端文字全部強制篡改為「再來一次」與「🔄」圖示！
+         */
+        function handleCardClick(cardElement) {
+            if (hasClicked) return; // 如果這局已經點過，鎖定不再回應
+            hasClicked = true;
+
+            const cardIndex = cardElement.dataset.index;
+            const targetIconEl = document.getElementById(`icon-${cardIndex}`);
+            const targetNameEl = document.getElementById(`name-${cardIndex}`);
+
+            // ==========================================================================
+            // 【外掛強制設定】無視原本隨機分配，直接強制置換為第7項「再來一次」
+            // ==========================================================================
+            targetIconEl.textContent = "🔄";
+            targetNameEl.textContent = "再來一次";
+
+            // 執行 CSS 翻牌動畫
+            cardElement.classList.add('flipped');
+
+            // 延遲 800 毫秒（等待翻牌動畫做完），再優雅地跳出可愛的生日整人彈窗
+            setTimeout(() => {
+                showModal();
+            }, 800);
+        }
+
+        /**
+         * 功能：顯示客製化的可愛彈窗
+         */
+        function showModal() {
+            const modal = document.getElementById('resultModal');
+            modal.classList.add('active');
+        }
+
+        /**
+         * 功能：關閉彈窗並重新洗牌格子（重置遊戲）
+         */
+        function resetGame() {
+            const modal = document.getElementById('resultModal');
+            modal.classList.remove('active');
+            
+            // 重新初始化，九宮格會重新洗牌，再次等待壽星點擊
+            initGame();
+        }
+
+        // 網頁加載完成後自動執行初始化
+        window.onload = initGame;
+    </script>
+</body>
+</html>
